@@ -1,0 +1,21 @@
+#!/usr/bin/perl
+
+$node = `mdconfig -a -t vnode -f "@ARGV[0]"`;
+chop($node);
+
+if ($node !~ /md\d+/)
+{
+    die "mdconfig failed.";
+}
+print "Mounting /dev/$node to /cdrom\n";
+
+$ret = system("mount_cd9660 /dev/$node /cdrom");
+
+if ($ret != 0)
+{
+    print "mount failed\n";
+    system("mdconfig -d -u $node");
+}
+
+
+$ret

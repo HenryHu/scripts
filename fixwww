@@ -1,0 +1,13 @@
+#!/bin/sh
+
+while [ "$1" != "" ]; do
+
+	echo "$1" > /tmp/filename
+
+	convmv --notest -f utf-8 -t iso8859-1 "$1"
+	convmv --notest -f gbk -t utf-8 "`iconv -f utf-8 -t iso8859-1 /tmp/filename`"
+
+	rm /tmp/filename
+
+	shift
+done
