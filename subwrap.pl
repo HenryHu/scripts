@@ -7,7 +7,7 @@ sub playfile {
 	}
 	if ($encoding eq "")
 	{
-		system("mplayer \"$file\" -sub \"$sub\" -utf8 $args");
+		system("mplayer \"$file\" -ass -sub \"$sub\" -utf8 $args");
 	} else {
 #		system("iconv -f $encoding -c \"$sub\" | mplayer \"$file\" -sub - -utf8 $args");
 		system("iconv -f $encoding -c \"$sub\" > /tmp/subtitle.sub");
@@ -18,7 +18,7 @@ sub playfile {
 
 @exts = ('srt','ssa','ass', '[VeryCD.com].ssa');
 
-@langs = ('en','Eng','chs','Chs','cn','sc_v2', 'sc','SC','uni_gb','gb','GBK','GB','cht','tc','TC','uni_big5','neta');
+@langs = ('en','Eng','chs','Chs','cn','sc_v2', 'sc','SC','uni_gb','gb','GBK','GB','cht','chi','tc','TC','uni_big5','neta');
 
 if ($#ARGV == -1)
 {
