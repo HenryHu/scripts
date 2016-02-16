@@ -55,7 +55,29 @@ class PacmanBackend(object):
         path = args.args[0]
         run_cmd("pacman -Qo %s" % path)
 
-backends = [AptBackend(), PacmanBackend()]
+class PkgBackend(object):
+    def available(self):
+        return subprocess.call("pkg help", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+
+    def search(self, args):
+        name = args.args[0]
+        run_cmd("pkg search %s" % name)
+
+    def install(self, args):
+        name = args.args[0]
+        run_cmd("sudo pkg install %s" % name)
+
+    def update(self, args):
+        run_cmd("sudo pkg update")
+
+    def upgrade(self, args):
+        run_cmd("sudo pkg upgrade")
+
+    def which(self, args):
+        path = args.args[0]
+        run_cmd("pkg which %s" % path)
+
+backends = [AptBackend(), PacmanBackend(), PkgBackend()]
 
 def detect_backend():
     for backend in backends:
