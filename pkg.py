@@ -39,7 +39,7 @@ class PacmanBackend(object):
 
     def search(self, args):
         name = args.args[0]
-        run_cmd("sudo pacman -Q %s" % name)
+        run_cmd("pacman -Q %s" % name)
 
     def install(self, args):
         name = args.args[0]
