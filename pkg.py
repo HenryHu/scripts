@@ -13,7 +13,8 @@ def run_cmd(cmd):
 
 class AptBackend(object):
     def available(self):
-        return subprocess.call("dpkg -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+        return subprocess.call("dpkg -h", shell=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
     def search(self, args):
         name = args.args[0]
@@ -33,9 +34,17 @@ class AptBackend(object):
         path = args.args[0]
         run_cmd("dpkg -S %s" % path)
 
+    def files(self, args):
+        name = args.args[0]
+        run_cmd("dpkg-query -L %s" % name)
+
+    def list(self, args):
+        run_cmd("dpkg -l")
+
 class PacmanBackend(object):
     def available(self):
-        return subprocess.call("pacman -h", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+        return subprocess.call("pacman -h",
+                               shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
     def search(self, args):
         name = args.args[0]
@@ -54,6 +63,13 @@ class PacmanBackend(object):
     def which(self, args):
         path = args.args[0]
         run_cmd("pacman -Qo %s" % path)
+
+    def files(self, args):
+        name = args.args[0]
+        run_cmd("pacman -Ql %s" % name)
+
+    def list(self, args):
+        run_cmd("pacman -Q")
 
 class PkgBackend(object):
     def available(self):
@@ -76,6 +92,13 @@ class PkgBackend(object):
     def which(self, args):
         path = args.args[0]
         run_cmd("pkg which %s" % path)
+
+    def files(self, args):
+        name = args.args[0]
+        run_cmd("pkg info -l %s" % name)
+
+    def list(self, args):
+        run_cmd("pkg info")
 
 backends = [AptBackend(), PacmanBackend(), PkgBackend()]
 
@@ -107,6 +130,10 @@ def main():
         backend.upgrade(args)
     elif args.cmd == "which":
         backend.which(args)
+    elif args.cmd == "files":
+        backend.files(args)
+    elif args.cmd == "list":
+        backend.list(args)
 
 if __name__ == "__main__":
     main()
