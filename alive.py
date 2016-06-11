@@ -32,7 +32,8 @@ def any_window_large_enough(window_list, width, height):
 
 def delay_screensaver():
     logging.debug("delaying screen saver")
-    subprocess.check_output('xscreensaver-command --deactivate', shell=True)
+    subprocess.call('xscreensaver-command --deactivate', shell=True)
+    subprocess.call('qdbus org.freedesktop.ScreenSaver /ScreenSaver SimulateUserActivity', shell=True)
     subprocess.check_output('xset -dpms', shell=True)
 
 def restore_screensaver():
@@ -59,9 +60,9 @@ def any_proc_using_cpu(proc_list, percent):
     return False
 
 def run_check():
-    window_list = get_window_list('npviewer.bin')
+    window_list = get_window_list('npviewer.bin') + get_window_list('pluginloader.exe')
     if any_window_large_enough(window_list, 640, 480):
-        proc_list = get_proc_list('npviewer.bin')
+        proc_list = get_proc_list('npviewer.bin') + get_proc_list('wine')
         if any_proc_using_cpu(proc_list, 15):
             delay_screensaver()
         else:
