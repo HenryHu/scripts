@@ -13,8 +13,8 @@ def run_cmd(cmd):
 
 class AptBackend(object):
     def available(self):
-        return subprocess.call("dpkg -h", shell=True,
-                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+        return subprocess.call("dpkg --version", shell=True, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE) == 0
 
     def search(self, args):
         name = args.args[0]
