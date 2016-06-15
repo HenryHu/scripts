@@ -4,12 +4,14 @@ import argparse
 import subprocess
 import sys
 
+
 def run_cmd(cmd):
     ret = subprocess.Popen(cmd, shell=True)
     ret.communicate()
     if ret.returncode != 0:
         print "ERROR: %d" % ret.returncode
         sys.exit(ret.returncode)
+
 
 class AptBackend(object):
     def available(self):
@@ -41,10 +43,11 @@ class AptBackend(object):
     def list(self, args):
         run_cmd("dpkg -l")
 
+
 class PacmanBackend(object):
     def available(self):
-        return subprocess.call("pacman -h",
-                               shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+        return subprocess.call("pacman -h", shell=True, stdout=subprocess.PIPE,
+                               stderr=subprocess.PIPE) == 0
 
     def search(self, args):
         name = args.args[0]
@@ -71,9 +74,11 @@ class PacmanBackend(object):
     def list(self, args):
         run_cmd("pacman -Q")
 
+
 class PkgBackend(object):
     def available(self):
-        return subprocess.call("pkg help", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
+        return subprocess.call("pkg help", shell=True,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0
 
     def search(self, args):
         name = args.args[0]
@@ -102,11 +107,13 @@ class PkgBackend(object):
 
 backends = [AptBackend(), PacmanBackend(), PkgBackend()]
 
+
 def detect_backend():
     for backend in backends:
         if backend.available():
             return backend
     return None
+
 
 def main():
     parser = argparse.ArgumentParser()
