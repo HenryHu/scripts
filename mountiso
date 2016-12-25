@@ -1,4 +1,10 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+
+if ($ARGV > 1) {
+    $encoding = @ARGV[1];
+} else {
+    $encoding = "zh_CN.UTF-8";
+}
 
 $node = `mdconfig -a -t vnode -f "@ARGV[0]"`;
 chop($node);
@@ -9,7 +15,7 @@ if ($node !~ /md\d+/)
 }
 print "Mounting /dev/$node to /cdrom\n";
 
-$ret = system("mount_cd9660 /dev/$node /cdrom");
+$ret = system("mount_cd9660 -o ro,-L=$encoding /dev/$node /cdrom");
 
 if ($ret != 0)
 {
