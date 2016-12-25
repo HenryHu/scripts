@@ -13,29 +13,44 @@ def get_window_list(window_class):
     except:
         return []
 
+def large_enough(width, height):
+    def func(window_id):
+        output = subprocess.check_output('xdotool getwindowgeometry --shell %s' % window_id,
+                                        shell=True)
+        for line in output.strip().split('\n'):
+            if '=' not in line:
+                continue
+            (name, val) = line.split('=')
+            if name == 'WIDTH':
+                if int(val) < width:
+                    return False
+            if name == 'HEIGHT':
+                if int(val) < height:
+                    return False
+        logging.debug("large %s" % window_id)
+        return True
+    return func
 
-def window_large_enough(window_id, width, height):
-    output = subprocess.check_output('xdotool getwindowgeometry --shell %s' % window_id,
-                                     shell=True)
-    for line in output.strip().split('\n'):
-        if '=' not in line:
-            continue
-        (name, val) = line.split('=')
-        if name == 'WIDTH':
-            if int(val) < width:
-                return False
-        if name == 'HEIGHT':
-            if int(val) < height:
-                return False
-    return True
-
-
-def any_window_large_enough(window_list, width, height):
-    for window_id in window_list:
-        if window_large_enough(window_id, width, height):
+def fullscreen():
+    def func(window_id):
+        output = subprocess.check_output('xprop -id %s _NET_WM_STATE' % window_id, shell=True)
+        if 'FULLSCREEN' in output:
+            logging.debug("fullscreen! %s" % window_id)
             return True
-    return False
+        else:
+            return False
+    return func
 
+def title_contains(text):
+    def func(window_id):
+        output = subprocess.check_output('xprop -id %s WM_NAME' % window_id, shell=True)
+        title = output.split('=')[1].strip()
+        if text in title:
+            logging.debug("text %s in %s! (%s)" % (text, title, window_id))
+            return True
+        else:
+            return False
+    return func
 
 def delay_screensaver():
     logging.debug("delaying screen saver")
@@ -71,19 +86,36 @@ def any_proc_using_cpu(proc_list, percent):
             return True
     return False
 
+def any_window(window_list, func):
+    for window_id in window_list:
+        if func(window_id):
+            return True
+    return False
 
 def run_check():
     window_list = get_window_list('npviewer.bin') + get_window_list('pluginloader.exe')
-    if any_window_large_enough(window_list, 640, 480):
+    if any_window(window_list, large_enough(640, 480)):
         proc_list = get_proc_list('npviewer.bin') + get_proc_list('wine')
         if any_proc_using_cpu(proc_list, 15):
             delay_screensaver()
+            return
         else:
-            logging.debug("no proc using cpu")
-            restore_screensaver()
+            logging.debug("large window, no cpu")
     else:
-        logging.debug("no window large enough")
-        restore_screensaver()
+        logging.debug("no large window")
+
+    window_list = get_window_list('Firefox')
+    if (any_window(window_list, fullscreen()) or
+        any_window(window_list, title_contains("YouTube"))):
+        proc_list = get_proc_list('firefox')
+        if any_proc_using_cpu(proc_list, 15):
+            delay_screensaver()
+        else:
+            logging.debug("fullscreen or video player, no cpu")
+    else:
+        logging.debug("no fullscreen")
+
+    restore_screensaver()
 
 
 def run_loop(check_interval):
