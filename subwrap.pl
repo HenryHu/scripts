@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 sub playfile {
 	my($file, $sub, $encoding, $args) = @_;
@@ -7,11 +7,12 @@ sub playfile {
 	}
 	if ($encoding eq "")
 	{
-		system("mplayer \"$file\" -ass -sub \"$sub\" -utf8 $args");
+		system("mpv \"$file\" -ass -sub \"$sub\" -utf8 $args");
 	} else {
 #		system("iconv -f $encoding -c \"$sub\" | mplayer \"$file\" -sub - -utf8 $args");
 		system("iconv -f $encoding -c \"$sub\" > /tmp/subtitle.sub");
-		system("mplayer \"$file\" -ass -sub /tmp/subtitle.sub -utf8 $args");
+#		system("mplayer \"$file\" -ass -sub /tmp/subtitle.sub -utf8 $args");
+		system("mpv \"$file\" -ass -sub /tmp/subtitle.sub $args");
 		system("rm -f /tmp/subtitle.sub");
 	}
 }
