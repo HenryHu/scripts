@@ -16,7 +16,7 @@ def get_window_list(window_class):
 def large_enough(width, height):
     def func(window_id):
         output = subprocess.check_output('xdotool getwindowgeometry --shell %s' % window_id,
-                                        shell=True)
+                                         shell=True)
         for line in output.strip().split('\n'):
             if '=' not in line:
                 continue
@@ -27,7 +27,7 @@ def large_enough(width, height):
             if name == 'HEIGHT':
                 if int(val) < height:
                     return False
-        logging.debug("large %s" % window_id)
+        logging.debug("large %s", window_id)
         return True
     return func
 
@@ -35,7 +35,7 @@ def fullscreen():
     def func(window_id):
         output = subprocess.check_output('xprop -id %s _NET_WM_STATE' % window_id, shell=True)
         if 'FULLSCREEN' in output:
-            logging.debug("fullscreen! %s" % window_id)
+            logging.debug("fullscreen! %s", window_id)
             return True
         else:
             return False
@@ -46,7 +46,7 @@ def title_contains(text):
         output = subprocess.check_output('xprop -id %s WM_NAME' % window_id, shell=True)
         title = output.split('=')[1].strip()
         if text in title:
-            logging.debug("text %s in %s! (%s)" % (text, title, window_id))
+            logging.debug("text %s in %s! (%s)", text, title, window_id)
             return True
         else:
             return False
