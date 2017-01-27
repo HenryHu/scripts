@@ -25,5 +25,3 @@ foreach $element (@sorted)
 {
 	print $element->{line};
 }
-
-
