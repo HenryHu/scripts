@@ -106,7 +106,9 @@ def run_check():
 
     window_list = get_window_list('Firefox')
     if (any_window(window_list, fullscreen()) or
-        any_window(window_list, title_contains("YouTube"))):
+        any_window(window_list, title_contains("YouTube")) or
+        any_window(window_list, title_contains("bilibili")) or
+        any_window(window_list, title_contains("BiliPlus"))):
         proc_list = get_proc_list('firefox')
         if any_proc_using_cpu(proc_list, 15):
             delay_screensaver()
