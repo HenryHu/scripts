@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #$manpath = `manpath | sed -e "s/:/ /g"`
 #foreach i ($TMANPATH)
 #( ls -1 $i/man1 | sed s%\\.$1.\*\$%% > /dev/stdout ) 
