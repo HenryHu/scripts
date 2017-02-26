@@ -1,0 +1,47 @@
+#!/bin/sh
+
+if [ $# -le 1 ]; then
+	echo "This tool would split ape file to flac file(s) according to cue sheet."
+	echo "You may also specify other formats."
+	echo "usage: $0 <cue file name> <ape file name> [<output format>]"
+	exit 1
+fi
+
+CUEFILE="$1"
+
+FILETYPE=`file "$1"`
+PA=`echo $FILETYPE | grep "ISO-8859"`
+PB=`echo $FILETYPE | grep "extended-ASCII"`
+PC=`echo $FILETYPE | grep "Non-ISO"`
+
+if [ "$PA" != "" -o "$PB" != "" -o "$PC" != "" ]; then
+    echo "Found non-UTF8 CUE file."
+    echo "=== 1.GBK ==="
+    cat "$1" | iconv -f gbk | head
+    echo "=== 2.CP932 ==="
+    cat "$1" | iconv -f cp932 | head
+    echo "Which one? 1=gbk 2=cp932"
+    read encoding_id
+    if [ "$encoding_id" = "1" ]; then
+        encoding=gbk
+    else
+        encoding=cp932
+    fi
+	echo "Found $encoding CUE file, converting..."
+	cat "$1" | iconv -f $encoding > /tmp/splitape.cue.tmp
+	CUEFILE=/tmp/splitape.cue.tmp
+fi
+
+if [ "$3" = "" ]; then
+	OUTPUT_FORMAT="flac"
+elif [ "$3" = "mp3" ]; then
+    OUTPUT_FORMAT="cust ext=mp3 lame - %f"
+else
+	OUTPUT_FORMAT=$3
+fi
+
+echo "CUE File: $1"
+echo "APE File: $2"
+
+shntool split -f "$CUEFILE" -t %n_%p_%a_%t -o "$OUTPUT_FORMAT" "$2"
+
