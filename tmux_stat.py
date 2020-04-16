@@ -11,11 +11,18 @@ def get_result_from_command(cmd):
 def get_result_from_sysctl(node):
     return get_result_from_command(["sysctl", "-n", node])
 
+def get_result_from_bsdsensors(sensor):
+    return get_result_from_command(["bsdsensors", "-sensors", sensor])
+
 def get_cpu_temp():
     return get_result_from_sysctl("dev.cpu.0.temperature").rstrip('C')
 
 def get_mb_temp():
-    return get_result_from_sysctl("hw.acpi.thermal.tz0.temperature").rstrip('C')
+    try:
+        return get_result_from_sysctl("hw.acpi.thermal.tz0.temperature").rstrip('C')
+    except:
+        return get_result_from_bsdsensors("temp:SYSTIN")
+
 
 def get_gpu_temp():
     return get_result_from_command(["nvidia-settings", "-q", "0/GPUCoreTemp", "-t"])
