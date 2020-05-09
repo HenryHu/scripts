@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+import time
 
 def get_result_from_command(cmd):
     result = subprocess.check_output(cmd)
@@ -53,6 +54,12 @@ def get_temp_str(name, temp):
     except:
         return "%s: %sC" % (name, temp)
 
+def get_time_str():
+    curdate = time.strftime("%Y/%-m/%-d")
+    curtime = time.strftime("%H:%M:%S")
+    return "#[default]#[fg=green]%s #[fg=blue]%s#[default]" % (curdate, curtime)
+
+
 cpu_temp = get_cpu_temp()
 mb_temp = get_mb_temp()
 gpu_temp = get_gpu_temp()
@@ -60,5 +67,6 @@ gpu_temp = get_gpu_temp()
 cpu_temp_str = get_temp_str("CPU", cpu_temp)
 mb_temp_str = get_temp_str("MB", mb_temp)
 gpu_temp_str = get_temp_str("GPU", gpu_temp)
-print("%s %s %s" % (cpu_temp_str, mb_temp_str, gpu_temp_str))
+time_str = get_time_str()
+print("%s %s %s %s" % (cpu_temp_str, mb_temp_str, gpu_temp_str, time_str))
 
